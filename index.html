@@ -1,0 +1,1966 @@
+                            <div class="cost-item">
+                                <span>Gross Profit Margin</span>
+                                <span style="color: var(--success-green);">65%</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>Operating Margin</span>
+                                <span style="color: var(--success-green);">38%</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>Return on Assets</span>
+                                <span style="color: var(--success-green);">18.5%</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>Return on Equity</span>
+                                <span style="color: var(--success-green);">35.8%</span>
+                            </div>
+                            <div class="cost-item">
+                                <span><strong>Revenue Growth Rate</strong></span>
+                                <span style="color: var(--success-green);"><strong>18% YoY</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- World Cup Impact Analysis -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">⚽</span>
+                    <h3>FIFA World Cup 2030 Impact Analysis</h3>
+                </div>
+                <div class="grid grid-3">
+                    <div class="metric-card" style="background: var(--accent-gold); color: white;">
+                        <h4>2030 Tournament Revenue</h4>
+                        <div class="value" style="font-size: 1.8rem;">€4,350,000</div>
+                        <div class="change">+180% peak impact</div>
+                    </div>
+                    <div class="metric-card" style="background: var(--success-green); color: white;">
+                        <h4>Legacy Revenue (3 years)</h4>
+                        <div class="value" style="font-size: 1.8rem;">€2,180,000</div>
+                        <div class="change">+35% sustained boost</div>
+                    </div>
+                    <div class="metric-card" style="background: var(--secondary-blue); color: white;">
+                        <h4>Total WC Value</h4>
+                        <div class="value" style="font-size: 1.8rem;">€6,530,000</div>
+                        <div class="change">Additional value</div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>Strategic Opportunity:</strong> Located just 15 minutes from Hassan II Stadium (World Cup Final venue), 
+                    positioning for premium hospitality packages during the tournament and long-term brand elevation.
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">📄</span>
+                    <h3>Business Reports & Export</h3>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div>
+                        <h4 style="color: var(--primary-blue); margin-bottom: 16px;">Generate Reports</h4>
+                        <button class="btn btn-primary btn-full" onclick="generateExecutiveSummary()">📊 Executive Summary</button>
+                        <button class="btn btn-primary btn-full" onclick="generateFinancialReport()">💰 Financial Analysis Report</button>
+                        <button class="btn btn-primary btn-full" onclick="generateMarketAnalysis()">📈 Market Analysis Report</button>
+                        <button class="btn btn-primary btn-full" onclick="generateInvestorPitch()">🎯 Investor Pitch Deck</button>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-blue); margin-bottom: 16px;">Export Data</h4>
+                        <button class="btn btn-outline btn-full" onclick="exportToCSV()">📋 Export to CSV</button>
+                        <button class="btn btn-outline btn-full" onclick="exportToExcel()">📊 Export to Excel</button>
+                        <button class="btn btn-outline btn-full" onclick="exportToPDF()">📄 Export to PDF</button>
+                        <button class="btn btn-outline btn-full" onclick="printReport()">🖨️ Print Report</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Report Container -->
+            <div id="generated-report" style="display: none;" class="card">
+                <div class="card-header">
+                    <span class="icon">📋</span>
+                    <h3 id="report-title">Generated Report</h3>
+                </div>
+                <div id="report-content" style="max-height: 600px; overflow-y: auto;">
+                    <!-- Report content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        var currentTab = 'dashboard';
+        var currentScenario = 'realistic';
+        
+        // Scenario multipliers
+        var scenarios = {
+            conservative: {
+                occupancyMultiplier: 0.85,
+                priceMultiplier: 0.92,
+                costMultiplier: 1.08,
+                description: 'Conservative scenario with lower occupancy rates, reduced pricing, and higher operational costs. Accounts for market uncertainties and cautious growth.'
+            },
+            realistic: {
+                occupancyMultiplier: 1.0,
+                priceMultiplier: 1.0,
+                costMultiplier: 1.0,
+                description: 'Realistic scenario based on market analysis and comparable luxury properties. Assumes moderate growth and typical market conditions.'
+            },
+            optimistic: {
+                occupancyMultiplier: 1.12,
+                priceMultiplier: 1.08,
+                costMultiplier: 0.95,
+                description: 'Optimistic scenario with premium positioning, higher occupancy rates, and operational efficiencies. Assumes strong market performance.'
+            }
+        };
+
+        // Tab management function
+        function showTab(tabName) {
+            console.log('Switching to tab:', tabName);
+            
+            // Hide all tab contents
+            var tabContents = document.querySelectorAll('.tab-content');
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all nav tabs
+            var navTabs = document.querySelectorAll('.nav-tab');
+            for (var i = 0; i < navTabs.length; i++) {
+                navTabs[i].classList.remove('active');
+            }
+            
+            // Show selected tab content
+            var selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+            
+            currentTab = tabName;
+        }
+
+        // Business model calculations
+        function calculateMetrics() {
+            try {
+                var scenario = scenarios[currentScenario];
+                
+                // Get configuration values with fallbacks
+                var deluxeRooms = parseInt(document.getElementById('config-deluxe-rooms')?.value || 4);
+                var vipSuites = parseInt(document.getElementById('config-vip-suites')?.value || 1);
+                var avgStay = parseFloat(document.getElementById('config-avg-stay')?.value || 2.5);
+                var guestsPerRoom = parseFloat(document.getElementById('config-guests-per-room')?.value || 2.1);
+                
+                // Pricing
+                var deluxePeak = (parseFloat(document.getElementById('config-deluxe-peak')?.value || 485)) * scenario.priceMultiplier;
+                var deluxeOff = (parseFloat(document.getElementById('config-deluxe-off')?.value || 345)) * scenario.priceMultiplier;
+                var vipPeak = (parseFloat(document.getElementById('config-vip-peak')?.value || 785)) * scenario.priceMultiplier;
+                var vipOff = (parseFloat(document.getElementById('config-vip-off')?.value || 585)) * scenario.priceMultiplier;
+                
+                // Occupancy
+                var peakOccupancy = (parseFloat(document.getElementById('config-peak-occupancy')?.value || 78) / 100) * scenario.occupancyMultiplier;
+                var offOccupancy = (parseFloat(document.getElementById('config-off-occupancy')?.value || 58) / 100) * scenario.occupancyMultiplier;
+                var peakMonths = parseInt(document.getElementById('config-peak-months')?.value || 5);
+                var offMonths = 12 - peakMonths;
+                
+                // Additional services
+                var fbRevenue = parseFloat(document.getElementById('config-fb-revenue')?.value || 95);
+                var spaRevenue = parseFloat(document.getElementById('config-spa-revenue')?.value || 135);
+                var activitiesRevenue = parseFloat(document.getElementById('config-activities-revenue')?.value || 105);
+                
+                // Events and celebrations
+                var corporateEvents = parseFloat(document.getElementById('config-corporate-events')?.value || 2);
+                var corporateRate = parseFloat(document.getElementById('config-corporate-rate')?.value || 4500);
+                var privateEvents = parseFloat(document.getElementById('config-private-events')?.value || 1.5);
+                var privateRate = parseFloat(document.getElementById('config-private-rate')?.value || 3200);
+                var weddingsYear = parseFloat(document.getElementById('config-weddings-year')?.value || 8);
+                var weddingRate = parseFloat(document.getElementById('config-wedding-rate')?.value || 12500);
+                var anniversariesYear = parseFloat(document.getElementById('config-anniversaries-year')?.value || 6);
+                var anniversaryRate = parseFloat(document.getElementById('config-anniversary-rate')?.value || 4800);
+                
+                // Content creation
+                var contentShoots = parseFloat(document.getElementById('config-content-shoots')?.value || 3);
+                var contentRate = parseFloat(document.getElementById('config-content-rate')?.value || 2800);
+
+                // Package revenues - NEW!
+                var packageYogaPrice = parseFloat(document.getElementById('package-yoga-price')?.value || 1680);
+                var packageYogaQuantity = parseFloat(document.getElementById('package-yoga-quantity')?.value || 24);
+                var packageGolfPrice = parseFloat(document.getElementById('package-golf-price')?.value || 3850);
+                var packageGolfQuantity = parseFloat(document.getElementById('package-golf-quantity')?.value || 18);
+                var packageWeekendPrice = parseFloat(document.getElementById('package-weekend-price')?.value || 2950);
+                var packageWeekendQuantity = parseFloat(document.getElementById('package-weekend-quantity')?.value || 16);
+                var packageContentPrice = parseFloat(document.getElementById('package-content-price')?.value || 5200);
+                var packageContentQuantity = parseFloat(document.getElementById('package-content-quantity')?.value || 12);
+                var packageWeddingPrice = parseFloat(document.getElementById('package-wedding-price')?.value || 12500);
+                var packageWeddingQuantity = parseFloat(document.getElementById('package-wedding-quantity')?.value || 8);
+                var packageAnniversaryPrice = parseFloat(document.getElementById('package-anniversary-price')?.value || 4800);
+                var packageAnniversaryQuantity = parseFloat(document.getElementById('package-anniversary-quantity')?.value || 6);
+
+                // Calculate accommodation revenue
+                var totalRooms = deluxeRooms + vipSuites;
+                var peakDays = peakMonths * 30;
+                var offDays = offMonths * 30;
+                
+                var deluxePeakRevenue = deluxeRooms * deluxePeak * peakDays * peakOccupancy;
+                var deluxeOffRevenue = deluxeRooms * deluxeOff * offDays * offOccupancy;
+                var vipPeakRevenue = vipSuites * vipPeak * peakDays * peakOccupancy;
+                var vipOffRevenue = vipSuites * vipOff * offDays * offOccupancy;
+                var accommodationRevenue = deluxePeakRevenue + deluxeOffRevenue + vipPeakRevenue + vipOffRevenue;
+                
+                // Calculate guest nights and additional revenues
+                var avgOccupancy = (peakOccupancy * peakMonths + offOccupancy * offMonths) / 12;
+                var totalGuestNights = totalRooms * 365 * avgOccupancy * guestsPerRoom;
+                
+                // Business unit revenues
+                var culinaryRevenue = totalGuestNights * fbRevenue;
+                var wellnessRevenue = totalGuestNights * 0.65 * spaRevenue; // 65% take spa services
+                var nauticalRevenue = totalGuestNights * 0.35 * activitiesRevenue; // 35% take nautical activities
+                var golfRevenue = totalGuestNights * 0.25 * (activitiesRevenue * 1.4); // 25% play golf at premium
+                
+                // Event revenues
+                var eventsRevenue = (corporateEvents * corporateRate + privateEvents * privateRate) * 12;
+                var weddingsRevenue = weddingsYear * weddingRate + anniversariesYear * anniversaryRate;
+                var contentRevenue = contentShoots * contentRate * 12;
+                
+                // Package revenues - NEW!
+                var packagesRevenue = (packageYogaPrice * packageYogaQuantity) + 
+                                    (packageGolfPrice * packageGolfQuantity) + 
+                                    (packageWeekendPrice * packageWeekendQuantity) + 
+                                    (packageContentPrice * packageContentQuantity) + 
+                                    (packageWeddingPrice * packageWeddingQuantity) + 
+                                    (packageAnniversaryPrice * packageAnniversaryQuantity);
+                
+                var totalRevenue = accommodationRevenue + culinaryRevenue + wellnessRevenue + 
+                                 nauticalRevenue + golfRevenue + eventsRevenue + weddingsRevenue + contentRevenue + packagesRevenue;
+                
+                // Calculate costs
+                var hrCosts = 485000 * scenario.costMultiplier;
+                var consumableCosts = totalRevenue * 0.205 * scenario.costMultiplier;
+                var marketingCosts = totalRevenue * 0.074;
+                var amortizationCosts = 195000;
+                var taxCosts = totalRevenue * 0.106;
+                var totalCosts = hrCosts + consumableCosts + marketingCosts + amortizationCosts + taxCosts;
+                
+                var grossProfit = totalRevenue - totalCosts;
+                var grossMargin = (grossProfit / totalRevenue) * 100;
+                
+                // Calculate key metrics
+                var revpar = accommodationRevenue / (totalRooms * 365);
+                var adr = accommodationRevenue / (totalRooms * 365 * avgOccupancy);
+                var occupancyRate = avgOccupancy * 100;
+                
+                // Customer metrics
+                var totalGuests = totalRooms * 365 * avgOccupancy * guestsPerRoom * 0.6; // 60% unique guests
+                var cac = marketingCosts / totalGuests;
+                var revenuePerGuest = totalRevenue / totalGuests;
+                var repeatRate = parseFloat(document.getElementById('config-repeat-rate')?.value || 28) / 100;
+                var clv = revenuePerGuest * (1 + repeatRate * 2.5); // Customer lifetime calculation
+                
+                // Update KPIs
+                updateElement('kpi-revenue', formatCurrency(totalRevenue));
+                updateElement('kpi-revpar', formatCurrency(revpar));
+                updateElement('kpi-adr', formatCurrency(adr));
+                updateElement('kpi-margin', Math.round(grossMargin) + '%');
+                updateElement('kpi-occupancy', Math.round(occupancyRate) + '%');
+                updateElement('kpi-clv', formatCurrency(clv));
+                updateElement('kpi-cac-ratio', Math.round((clv / cac) * 10) / 10 + ':1');
+                updateElement('kpi-payback', '2.8 yrs');
+                
+                // Update business units
+                updateBusinessUnit('accommodation', accommodationRevenue, 68);
+                updateBusinessUnit('culinary', culinaryRevenue, 48);
+                updateBusinessUnit('wellness', wellnessRevenue, 75);
+                updateBusinessUnit('nautical', nauticalRevenue, 62);
+                updateBusinessUnit('golf', golfRevenue, 65);
+                updateBusinessUnit('events', eventsRevenue, 58);
+                updateBusinessUnit('weddings', weddingsRevenue, 65);
+                updateBusinessUnit('content', contentRevenue, 85);
+                updateBusinessUnit('packages', packagesRevenue, 72); // NEW!
+                
+                // Update progress bars
+                updateProgressBars(totalRevenue, {
+                    accommodation: accommodationRevenue,
+                    culinary: culinaryRevenue,
+                    wellness: wellnessRevenue,
+                    nautical: nauticalRevenue,
+                    golf: golfRevenue,
+                    events: eventsRevenue,
+                    weddings: weddingsRevenue,
+                    content: contentRevenue,
+                    packages: packagesRevenue // NEW!
+                });
+                
+                // Update costs
+                updateElement('cost-hr', formatCurrency(hrCosts));
+                updateElement('cost-consumables', formatCurrency(consumableCosts));
+                updateElement('cost-marketing', formatCurrency(marketingCosts));
+                updateElement('cost-amortization', formatCurrency(amortizationCosts));
+                updateElement('cost-taxes', formatCurrency(taxCosts));
+                updateElement('cost-total', formatCurrency(totalCosts));
+                
+                // Update analytics
+                updateElement('analytics-cac', formatCurrency(cac));
+                updateElement('analytics-clv', formatCurrency(clv));
+                updateElement('analytics-rpg', formatCurrency(revenuePerGuest));
+                
+                // Update projections
+                updateProjections(totalRevenue, grossMargin);
+                
+                console.log('Metrics calculated successfully');
+                
+            } catch (error) {
+                console.error('Error calculating metrics:', error);
+            }
+        }
+
+        // Helper functions
+        function formatCurrency(amount) {
+            return '€' + Math.round(amount).toLocaleString();
+        }
+
+        function updateElement(id, value) {
+            var element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+
+        function updateBusinessUnit(unit, revenue, margin) {
+            updateElement('bu-' + unit, formatCurrency(revenue));
+            updateElement('margin-' + unit, margin + '%');
+        }
+
+        function updateProgressBars(totalRevenue, revenues) {
+            var units = Object.keys(revenues);
+            for (var i = 0; i < units.length; i++) {
+                var unit = units[i];
+                var percentage = (revenues[unit] / totalRevenue) * 100;
+                var element = document.getElementById('progress-' + unit);
+                if (element) {
+                    element.style.width = Math.round(percentage) + '%';
+                }
+            }
+        }
+
+        function updateProjections(baseRevenue, margin) {
+            var growthRates = {
+                conservative: [1.08, 1.15, 1.22],
+                realistic: [1.10, 1.21, 1.34],
+                optimistic: [1.15, 1.32, 1.52]
+            };
+            
+            var rates = growthRates[currentScenario];
+            updateElement('projection-year1', formatCurrency(baseRevenue));
+            updateElement('projection-year2', formatCurrency(baseRevenue * rates[1]));
+            updateElement('projection-year3', formatCurrency(baseRevenue * rates[2]));
+        }
+
+        // Scenario management
+        function setScenario(scenario) {
+            currentScenario = scenario;
+            
+            // Update scenario buttons
+            var scenarioBtns = document.querySelectorAll('.scenario-btn');
+            for (var i = 0; i < scenarioBtns.length; i++) {
+                scenarioBtns[i].classList.remove('active');
+            }
+            event.target.classList.add('active');
+            
+            // Update description
+            var description = document.getElementById('scenario-description');
+            if (description) {
+                var scenarioData = scenarios[scenario];
+                description.innerHTML = '<strong>' + scenario.charAt(0).toUpperCase() + scenario.slice(1) + ' Scenario:</strong> ' + scenarioData.description;
+                
+                // Add appropriate alert class
+                description.className = 'alert ' + (scenario === 'conservative' ? 'alert-warning' : 
+                                                  scenario === 'optimistic' ? 'alert-success' : 'alert-info');
+            }
+            
+            // Recalculate metrics
+            calculateMetrics();
+        }
+
+        // Package management
+        function updatePackageMetrics() {
+            console.log('Package metrics updated');
+            // Recalculate business metrics when packages change
+            calculateMetrics();
+        }
+
+        // Save package customizations
+        function savePackageCustomizations() {
+            var packages = {
+                yoga: {
+                    title: document.getElementById('package-yoga-title').value,
+                    description: document.getElementById('package-yoga-description').value,
+                    price: document.getElementById('package-yoga-price').value,
+                    quantity: document.getElementById('package-yoga-quantity').value
+                },
+                golf: {
+                    title: document.getElementById('package-golf-title').value,
+                    description: document.getElementById('package-golf-description').value,
+                    price: document.getElementById('package-golf-price').value,
+                    quantity: document.getElementById('package-golf-quantity').value
+                },
+                weekend: {
+                    title: document.getElementById('package-weekend-title').value,
+                    description: document.getElementById('package-weekend-description').value,
+                    price: document.getElementById('package-weekend-price').value,
+                    quantity: document.getElementById('package-weekend-quantity').value
+                },
+                content: {
+                    title: document.getElementById('package-content-title').value,
+                    description: document.getElementById('package-content-description').value,
+                    price: document.getElementById('package-content-price').value,
+                    quantity: document.getElementById('package-content-quantity').value
+                },
+                wedding: {
+                    title: document.getElementById('package-wedding-title').value,
+                    description: document.getElementById('package-wedding-description').value,
+                    price: document.getElementById('package-wedding-price').value,
+                    quantity: document.getElementById('package-wedding-quantity').value
+                },
+                anniversary: {
+                    title: document.getElementById('package-anniversary-title').value,
+                    description: document.getElementById('package-anniversary-description').value,
+                    price: document.getElementById('package-anniversary-price').value,
+                    quantity: document.getElementById('package-anniversary-quantity').value
+                }
+            };
+
+            // Calculate total package revenue for confirmation
+            var totalPackageRevenue = 0;
+            Object.keys(packages).forEach(function(key) {
+                var pkg = packages[key];
+                totalPackageRevenue += parseFloat(pkg.price) * parseFloat(pkg.quantity);
+            });
+
+            // Show success message with revenue impact
+            alert('Package customizations saved successfully! 🎉\n\n' +
+                  'All your package changes have been updated in the business model.\n' +
+                  'Total Annual Package Revenue: €' + Math.round(totalPackageRevenue).toLocaleString() + '\n' +
+                  'The new pricing and quantities are reflected in all calculations.');
+
+            // Log the saved packages for debugging
+            console.log('Saved packages:', packages);
+            console.log('Total package revenue:', totalPackageRevenue);
+            
+            // Recalculate metrics to reflect new package pricing
+            calculateMetrics();
+        }
+
+        // Report generation functions
+        function generateExecutiveSummary() {
+            var reportContent = '<div style="line-height: 1.8;">' +
+                '<h2 style="color: var(--primary-blue); margin-bottom: 20px;">Executive Summary</h2>' +
+                '<h3>Business Overview</h3>' +
+                '<p><strong>Property:</strong> Bahia Azure Luxury Guesthouse</p>' +
+                '<p><strong>Location:</strong> Bouznika Golf Beach Resort, Morocco</p>' +
+                '<p><strong>Capacity:</strong> 4 Deluxe Rooms + 1 VIP Suite (12 guests maximum)</p>' +
+                '<p><strong>Unique Positioning:</strong> Golf-front location with ocean views, 15 minutes from Hassan II Stadium (World Cup 2030 Final venue)</p>' +
+                '<h3>Financial Highlights</h3>' +
+                '<p><strong>Annual Revenue:</strong> ' + document.getElementById('kpi-revenue').textContent + '</p>' +
+                '<p><strong>Gross Margin:</strong> ' + document.getElementById('kpi-margin').textContent + '</p>' +
+                '<p><strong>RevPAR:</strong> ' + document.getElementById('kpi-revpar').textContent + '</p>' +
+                '<p><strong>Average Daily Rate:</strong> ' + document.getElementById('kpi-adr').textContent + '</p>' +
+                '<p><strong>Customer Lifetime Value:</strong> ' + document.getElementById('kpi-clv').textContent + '</p>' +
+                '<h3>Strategic Advantages</h3>' +
+                '<ul>' +
+                '<li>Premium location in exclusive Bahia Golf Beach resort community</li>' +
+                '<li>Strategic positioning between Morocco\'s economic (Casablanca) and political (Rabat) capitals</li>' +
+                '<li>World Cup 2030 proximity advantage - 15 minutes from Final venue</li>' +
+                '<li>Diversified revenue streams across 8 business units</li>' +
+                '<li>High-margin wellness and content creation services</li>' +
+                '<li>Strong repeat customer rate and customer lifetime value</li>' +
+                '</ul>' +
+                '</div>';
+            
+            showGeneratedReport('Executive Summary Report', reportContent);
+        }
+
+        function generateFinancialReport() {
+            var reportContent = '<div style="line-height: 1.8;">' +
+                '<h2 style="color: var(--primary-blue); margin-bottom: 20px;">Financial Analysis Report</h2>' +
+                '<h3>Revenue Analysis</h3>' +
+                '<p><strong>Total Annual Revenue:</strong> ' + document.getElementById('kpi-revenue').textContent + '</p>' +
+                '<p><strong>Gross Profit Margin:</strong> ' + document.getElementById('kpi-margin').textContent + '</p>' +
+                '<p><strong>EBITDA Margin:</strong> 42%</p>' +
+                '<p><strong>Return on Investment:</strong> 35.8%</p>' +
+                '<h3>Business Unit Performance</h3>' +
+                '<ul>' +
+                '<li><strong>Accommodation Services:</strong> ' + document.getElementById('bu-accommodation').textContent + ' (' + document.getElementById('margin-accommodation').textContent + ' margin)</li>' +
+                '<li><strong>Event Hosting:</strong> ' + document.getElementById('bu-events').textContent + ' (' + document.getElementById('margin-events').textContent + ' margin)</li>' +
+                '<li><strong>Weddings & Anniversaries:</strong> ' + document.getElementById('bu-weddings').textContent + ' (' + document.getElementById('margin-weddings').textContent + ' margin)</li>' +
+                '<li><strong>Content Creation:</strong> ' + document.getElementById('bu-content').textContent + ' (' + document.getElementById('margin-content').textContent + ' margin)</li>' +
+                '</ul>' +
+                '</div>';
+            
+            showGeneratedReport('Financial Analysis Report', reportContent);
+        }
+
+        function generateMarketAnalysis() {
+            var reportContent = '<div style="line-height: 1.8;">' +
+                '<h2 style="color: var(--primary-blue); margin-bottom: 20px;">Market Analysis Report</h2>' +
+                '<h3>Market Position</h3>' +
+                '<p><strong>Target Market:</strong> Ultra-luxury leisure travelers, corporate executives, wellness enthusiasts, content creators</p>' +
+                '<p><strong>Geographic Focus:</strong> Morocco (Casablanca-Rabat corridor), France, Spain, UAE, premium international markets</p>' +
+                '<p><strong>Competitive Advantage:</strong> Unique golf-ocean positioning, World Cup 2030 proximity, diversified service offerings</p>' +
+                '<h3>Revenue Opportunities</h3>' +
+                '<ul>' +
+                '<li><strong>FIFA World Cup 2030:</strong> Located 15 minutes from Hassan II Stadium (Final venue)</li>' +
+                '<li><strong>CAN 2025:</strong> Morocco hosting December 2025 - January 2026</li>' +
+                '<li><strong>Annual FIFA Events:</strong> Women\'s U-17 World Cup (5 consecutive years 2025-2029)</li>' +
+                '<li><strong>Business Travel:</strong> Strategic location between economic/political capitals</li>' +
+                '<li><strong>Content Creation:</strong> Premium location for influencer and commercial shoots</li>' +
+                '</ul>' +
+                '</div>';
+            
+            showGeneratedReport('Market Analysis Report', reportContent);
+        }
+
+        function generateInvestorPitch() {
+            var reportContent = '<div style="line-height: 1.8;">' +
+                '<h2 style="color: var(--primary-blue); margin-bottom: 20px;">Investor Pitch Deck</h2>' +
+                '<div style="background: var(--light-gold); padding: 20px; border-radius: 12px; margin: 20px 0;">' +
+                '<h3 style="color: var(--primary-blue);">Investment Opportunity</h3>' +
+                '<p><strong>Property:</strong> Bahia Azure - Luxury Guesthouse in Morocco\'s Premier Golf Resort</p>' +
+                '<p><strong>Investment Required:</strong> €2,750,000</p>' +
+                '<p><strong>Projected Annual Revenue:</strong> ' + document.getElementById('kpi-revenue').textContent + '</p>' +
+                '<p><strong>Gross Margin:</strong> ' + document.getElementById('kpi-margin').textContent + '</p>' +
+                '<p><strong>Payback Period:</strong> 2.8 years</p>' +
+                '<p><strong>IRR:</strong> 36.5%</p>' +
+                '</div>' +
+                '<h3>Why Invest Now?</h3>' +
+                '<ol>' +
+                '<li><strong>FIFA World Cup 2030:</strong> Morocco co-hosting with Spain & Portugal. Property located 15 minutes from Final venue.</li>' +
+                '<li><strong>Unique Location:</strong> Only luxury guesthouse in Bahia Golf Beach resort with golf-ocean views.</li>' +
+                '<li><strong>Multiple Revenue Streams:</strong> 8 distinct business units reducing dependency risk.</li>' +
+                '<li><strong>Proven Market Demand:</strong> Morocco luxury tourism growing 12% annually.</li>' +
+                '<li><strong>Strategic Location:</strong> 30 minutes from both Casablanca and Rabat.</li>' +
+                '</ol>' +
+                '</div>';
+            
+            showGeneratedReport('Investor Pitch Deck', reportContent);
+        }
+
+        function showGeneratedReport(title, content) {
+            document.getElementById('report-title').textContent = title;
+            document.getElementById('report-content').innerHTML = content;
+            document.getElementById('generated-report').style.display = 'block';
+            
+            // Scroll to report
+            document.getElementById('generated-report').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Export functions
+        function exportToCSV() {
+            var data = [
+                ['Metric', 'Value'],
+                ['Annual Revenue', document.getElementById('kpi-revenue').textContent],
+                ['RevPAR', document.getElementById('kpi-revpar').textContent],
+                ['ADR', document.getElementById('kpi-adr').textContent],
+                ['Gross Margin', document.getElementById('kpi-margin').textContent],
+                ['Occupancy Rate', document.getElementById('kpi-occupancy').textContent],
+                ['Customer LTV', document.getElementById('kpi-clv').textContent],
+                ['CAC Ratio', document.getElementById('kpi-cac-ratio').textContent],
+                [''],
+                ['Business Unit', 'Revenue', 'Margin'],
+                ['Accommodation', document.getElementById('bu-accommodation').textContent, document.getElementById('margin-accommodation').textContent],
+                ['Culinary', document.getElementById('bu-culinary').textContent, document.getElementById('margin-culinary').textContent],
+                ['Events', document.getElementById('bu-events').textContent, document.getElementById('margin-events').textContent],
+                ['Weddings', document.getElementById('bu-weddings').textContent, document.getElementById('margin-weddings').textContent],
+                ['Content', document.getElementById('bu-content').textContent, document.getElementById('margin-content').textContent]
+            ];
+            
+            var csvContent = data.map(function(row) {
+                return row.join(',');
+            }).join('\n');
+            
+            var blob = new Blob([csvContent], { type: 'text/csv' });
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'bahia_azure_business_model.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function exportToExcel() {
+            alert('Excel export functionality would be implemented with a library like SheetJS in production.');
+        }
+
+        function exportToPDF() {
+            alert('PDF export functionality would be implemented with a library like jsPDF in production.');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        // Initialize the application
+        function initializeApp() {
+            console.log('Initializing Bahia Azure Business Model Suite...');
+            
+            // Set default scenario
+            currentScenario = 'realistic';
+            
+            // Calculate initial metrics
+            calculateMetrics();
+            
+            // Add event listeners to all configuration inputs
+            var inputs = document.querySelectorAll('input[type="number"]');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener('input', calculateMetrics);
+                inputs[i].addEventListener('change', calculateMetrics);
+            }
+            
+            // Add event listeners to package text inputs
+            var textInputs = document.querySelectorAll('input[type="text"]');
+            for (var i = 0; i < textInputs.length; i++) {
+                textInputs[i].addEventListener('change', updatePackageMetrics);
+            }
+            
+            console.log('Application initialized successfully');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        // Backup initialization
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (document.getElementById('kpi-revenue').textContent === '€1,555,000') {
+                    console.log('Initial values loaded, recalculating...');
+                    calculateMetrics();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bahia Azure - Business Model Suite</title>
+    <style>
+        :root {
+            --primary-blue: #1a365d;
+            --secondary-blue: #2d5aa0;
+            --accent-gold: #d4af37;
+            --light-gold: #f7f3e9;
+            --success-green: #38a169;
+            --warning-orange: #dd6b20;
+            --error-red: #e53e3e;
+            --neutral-100: #f7fafc;
+            --neutral-200: #edf2f7;
+            --neutral-800: #2d3748;
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--neutral-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .app-header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .app-header h1 {
+            color: var(--primary-blue);
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .app-header .subtitle {
+            color: var(--neutral-800);
+            font-size: 1.3rem;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 16px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--neutral-800);
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            background: var(--light-gold);
+            transform: translateY(-1px);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            box-shadow: 0 4px 20px rgba(45, 90, 160, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--neutral-200);
+        }
+
+        .card-header h3 {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-left: 12px;
+        }
+
+        .card-header .icon {
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--neutral-800);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--neutral-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 3px rgba(45, 90, 160, 0.1);
+            background: white;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            box-shadow: 0 4px 15px rgba(45, 90, 160, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(45, 90, 160, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-full { width: 100%; justify-content: center; }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(45, 90, 160, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .metric-card h4 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .metric-card .change {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .business-unit-card {
+            background: white;
+            border: 2px solid var(--neutral-200);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .business-unit-card:hover {
+            border-color: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .business-unit-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .business-unit-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .business-unit-revenue {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--success-green);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--neutral-200);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green), var(--accent-gold));
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .package-card {
+            background: white;
+            border: 2px solid var(--neutral-200);
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-gold), var(--secondary-blue));
+        }
+
+        .package-card:hover {
+            border-color: var(--secondary-blue);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .package-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+        }
+
+        .package-description {
+            color: var(--neutral-800);
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .package-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin: 16px 0;
+        }
+
+        .package-features {
+            list-style: none;
+            text-align: left;
+            margin: 16px 0;
+        }
+
+        .package-features li {
+            padding: 6px 0;
+            position: relative;
+            padding-left: 24px;
+            color: var(--neutral-800);
+            font-size: 0.9rem;
+        }
+
+        .package-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-green);
+            font-weight: bold;
+        }
+
+        /* Editable package fields */
+        .package-card input[type="text"],
+        .package-card input[type="number"] {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 4px 8px;
+        }
+
+        .package-card input[type="text"]:hover,
+        .package-card input[type="number"]:hover {
+            background: rgba(45, 90, 160, 0.05);
+            border: 1px solid var(--secondary-blue);
+            box-shadow: 0 2px 8px rgba(45, 90, 160, 0.1);
+        }
+
+        .package-card input[type="text"]:focus,
+        .package-card input[type="number"]:focus {
+            outline: none;
+            background: white;
+            border: 2px solid var(--secondary-blue);
+            box-shadow: 0 4px 15px rgba(45, 90, 160, 0.2);
+        }
+
+        /* Add a subtle indicator that fields are editable */
+        .package-card input[type="text"]::placeholder,
+        .package-card input[type="number"]::placeholder {
+            color: var(--neutral-800);
+            opacity: 0.7;
+        }
+
+        .package-card .package-title input:hover::after {
+            content: ' ✏️';
+            font-size: 0.8rem;
+        }
+
+        .scenario-selector {
+            display: flex;
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+        }
+
+        .scenario-btn {
+            flex: 1;
+            padding: 16px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--neutral-800);
+        }
+
+        .scenario-btn.active {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            box-shadow: 0 4px 15px rgba(45, 90, 160, 0.3);
+        }
+
+        .cost-breakdown {
+            background: var(--light-gold);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 16px 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: rgba(45, 90, 160, 0.1);
+            border-color: var(--secondary-blue);
+            color: var(--primary-blue);
+        }
+
+        .alert-success {
+            background: rgba(56, 161, 105, 0.1);
+            border-color: var(--success-green);
+            color: var(--success-green);
+        }
+
+        .alert-warning {
+            background: rgba(221, 107, 32, 0.1);
+            border-color: var(--warning-orange);
+            color: var(--warning-orange);
+        }
+
+        @media (max-width: 768px) {
+            .app-header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                overflow-x: auto;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--neutral-200);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary-blue);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <h1>🏖️ Bahia Azure</h1>
+            <p class="subtitle">Luxury Guesthouse Business Model Suite</p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-tab" onclick="showTab('configuration')">⚙️ Configuration</button>
+            <button class="nav-tab" onclick="showTab('packages')">🎁 Packages</button>
+            <button class="nav-tab" onclick="showTab('scenarios')">📈 Scenarios</button>
+            <button class="nav-tab" onclick="showTab('analytics')">🔍 Analytics</button>
+            <button class="nav-tab" onclick="showTab('reports')">📄 Reports</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <!-- KPI Metrics -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">📈</span>
+                    <h3>Key Performance Indicators</h3>
+                </div>
+                <div class="grid grid-4">
+                    <div class="metric-card">
+                        <h4>Annual Revenue</h4>
+                        <div class="value" id="kpi-revenue">€1,555,000</div>
+                        <div class="change">+18% vs target</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>RevPAR</h4>
+                        <div class="value" id="kpi-revpar">€195</div>
+                        <div class="change">€53k above market</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Average ADR</h4>
+                        <div class="value" id="kpi-adr">€312</div>
+                        <div class="change">Premium positioning</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Gross Margin</h4>
+                        <div class="value" id="kpi-margin">38%</div>
+                        <div class="change">Industry leading</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Occupancy Rate</h4>
+                        <div class="value" id="kpi-occupancy">68%</div>
+                        <div class="change">Optimal balance</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Customer LTV</h4>
+                        <div class="value" id="kpi-clv">€2,450</div>
+                        <div class="change">High retention</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>CAC Ratio</h4>
+                        <div class="value" id="kpi-cac-ratio">6.2:1</div>
+                        <div class="change">Excellent ROI</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Payback Period</h4>
+                        <div class="value" id="kpi-payback">2.8 yrs</div>
+                        <div class="change">Strong investment</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Units Revenue -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">💼</span>
+                    <h3>Business Units Performance</h3>
+                </div>
+                <div class="grid grid-2">
+                    <div class="business-unit-card">
+                        <div class="business-unit-header">
+                            <div class="business-unit-title">
+                                <span>🏨</span>
+                                <span>Accommodation Services</span>
+                            </div>
+                            <div class="business-unit-revenue" id="bu-accommodation">€785,000</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-accommodation" style="width: 50%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                            <span>Margin: <strong id="margin-accommodation">68%</strong></span>
+                            <span>Growth: <strong>+15%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="business-unit-card">
+                        <div class="business-unit-header">
+                            <div class="business-unit-title">
+                                <span>🍽️</span>
+                                <span>Culinary Operations</span>
+                            </div>
+                            <div class="business-unit-revenue" id="bu-culinary">€225,000</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-culinary" style="width: 14%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                            <span>Margin: <strong id="margin-culinary">48%</strong></span>
+                            <span>Growth: <strong>+8%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="business-unit-card">
+                        <div class="business-unit-header">
+                            <div class="business-unit-title">
+                                <span>🎭</span>
+                                <span>Event Hosting</span>
+                            </div>
+                            <div class="business-unit-revenue" id="bu-events">€145,000</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-events" style="width: 9%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                            <span>Margin: <strong id="margin-events">58%</strong></span>
+                            <span>Growth: <strong>+28%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="business-unit-card">
+                        <div class="business-unit-header">
+                            <div class="business-unit-title">
+                                <span>💕</span>
+                                <span>Weddings & Anniversaries</span>
+                            </div>
+                            <div class="business-unit-revenue" id="bu-weddings">€125,000</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-weddings" style="width: 8%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                            <span>Margin: <strong id="margin-weddings">65%</strong></span>
+                            <span>Growth: <strong>+42%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="business-unit-card">
+                        <div class="business-unit-header">
+                            <div class="business-unit-title">
+                                <span>🧘</span>
+                                <span>Wellness & Spa</span>
+                            </div>
+                            <div class="business-unit-revenue" id="bu-wellness">€95,000</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-wellness" style="width: 6%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                            <span>Margin: <strong id="margin-wellness">75%</strong></span>
+                            <span>Growth: <strong>+22%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="business-unit-card">
+                        <div class="business-unit-header">
+                            <div class="business-unit-title">
+                                <span>⛳</span>
+                                <span>Golf Experiences</span>
+                            </div>
+                            <div class="business-unit-revenue" id="bu-golf">€78,000</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-golf" style="width: 5%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                            <span>Margin: <strong id="margin-golf">65%</strong></span>
+                            <span>Growth: <strong>+12%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="business-unit-card">
+                        <div class="business-unit-header">
+                            <div class="business-unit-title">
+                                <span>🎁</span>
+                                <span>Lifestyle Packages</span>
+                            </div>
+                            <div class="business-unit-revenue" id="bu-packages">€185,000</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-packages" style="width: 12%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                            <span>Margin: <strong id="margin-packages">72%</strong></span>
+                            <span>Growth: <strong>+45%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="business-unit-card">
+                        <div class="business-unit-header">
+                            <div class="business-unit-title">
+                                <span>📸</span>
+                                <span>Content Creation</span>
+                            </div>
+                            <div class="business-unit-revenue" id="bu-content">€72,000</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-content" style="width: 5%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                            <span>Margin: <strong id="margin-content">85%</strong></span>
+                            <span>Growth: <strong>+35%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="business-unit-card">
+                        <div class="business-unit-header">
+                            <div class="business-unit-title">
+                                <span>🚤</span>
+                                <span>Nautical & Water Sports</span>
+                            </div>
+                            <div class="business-unit-revenue" id="bu-nautical">€58,000</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-nautical" style="width: 4%"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #666;">
+                            <span>Margin: <strong id="margin-nautical">62%</strong></span>
+                            <span>Growth: <strong>+18%</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost Structure -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">💸</span>
+                    <h3>Cost Structure & KPIs</h3>
+                </div>
+                <div class="grid grid-2">
+                    <div class="cost-breakdown">
+                        <h4 style="margin-bottom: 16px; color: var(--primary-blue);">Annual Operating Costs</h4>
+                        <div class="cost-item">
+                            <span>Human Resources</span>
+                            <span id="cost-hr">€485,000</span>
+                        </div>
+                        <div class="cost-item">
+                            <span>Consumables & Maintenance</span>
+                            <span id="cost-consumables">€320,000</span>
+                        </div>
+                        <div class="cost-item">
+                            <span>Marketing & Partnerships</span>
+                            <span id="cost-marketing">€115,000</span>
+                        </div>
+                        <div class="cost-item">
+                            <span>Amortization</span>
+                            <span id="cost-amortization">€195,000</span>
+                        </div>
+                        <div class="cost-item">
+                            <span>Taxes & Fees</span>
+                            <span id="cost-taxes">€165,000</span>
+                        </div>
+                        <div class="cost-item">
+                            <span><strong>Total Operating Costs</strong></span>
+                            <span id="cost-total">€1,280,000</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 style="margin-bottom: 16px; color: var(--primary-blue);">Cost Efficiency Ratios</h4>
+                        <div class="grid grid-2">
+                            <div class="metric-card" style="background: var(--light-gold); color: var(--primary-blue);">
+                                <h4>Labor Cost %</h4>
+                                <div class="value" style="font-size: 1.5rem;">31.2%</div>
+                                <div class="change">Industry: 35-40%</div>
+                            </div>
+                            <div class="metric-card" style="background: var(--light-gold); color: var(--primary-blue);">
+                                <h4>Cost per Guest</h4>
+                                <div class="value" style="font-size: 1.5rem;">€285</div>
+                                <div class="change">Optimized</div>
+                            </div>
+                            <div class="metric-card" style="background: var(--light-gold); color: var(--primary-blue);">
+                                <h4>EBITDA Margin</h4>
+                                <div class="value" style="font-size: 1.5rem;">42%</div>
+                                <div class="change">Excellent</div>
+                            </div>
+                            <div class="metric-card" style="background: var(--light-gold); color: var(--primary-blue);">
+                                <h4>ROI</h4>
+                                <div class="value" style="font-size: 1.5rem;">35.8%</div>
+                                <div class="change">Superior</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Tab -->
+        <div id="configuration" class="tab-content">
+            <div class="grid grid-2">
+                <!-- Property Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">🏠</span>
+                        <h3>Property Configuration</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Deluxe Rooms</label>
+                        <input type="number" class="form-control" id="config-deluxe-rooms" value="4" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>VIP Suites</label>
+                        <input type="number" class="form-control" id="config-vip-suites" value="1" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Maximum Guests Capacity</label>
+                        <input type="number" class="form-control" id="config-max-guests" value="12" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Average Stay Duration (nights)</label>
+                        <input type="number" class="form-control" id="config-avg-stay" value="2.5" step="0.1" onchange="calculateMetrics()">
+                    </div>
+                </div>
+
+                <!-- Pricing Strategy -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">💰</span>
+                        <h3>Dynamic Pricing Strategy</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Deluxe Room - Peak Season (€/night)</label>
+                        <input type="number" class="form-control" id="config-deluxe-peak" value="485" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Deluxe Room - Off-Peak Season (€/night)</label>
+                        <input type="number" class="form-control" id="config-deluxe-off" value="345" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>VIP Suite - Peak Season (€/night)</label>
+                        <input type="number" class="form-control" id="config-vip-peak" value="785" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>VIP Suite - Off-Peak Season (€/night)</label>
+                        <input type="number" class="form-control" id="config-vip-off" value="585" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Peak Season Months</label>
+                        <input type="number" class="form-control" id="config-peak-months" value="5" min="1" max="11" onchange="calculateMetrics()">
+                    </div>
+                </div>
+
+                <!-- Occupancy Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">📅</span>
+                        <h3>Occupancy Strategy</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Peak Season Occupancy (%)</label>
+                        <input type="number" class="form-control" id="config-peak-occupancy" value="78" min="0" max="100" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Off-Peak Season Occupancy (%)</label>
+                        <input type="number" class="form-control" id="config-off-occupancy" value="58" min="0" max="100" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Average Guests per Room</label>
+                        <input type="number" class="form-control" id="config-guests-per-room" value="2.1" step="0.1" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Repeat Guest Rate (%)</label>
+                        <input type="number" class="form-control" id="config-repeat-rate" value="28" min="0" max="100" onchange="calculateMetrics()">
+                    </div>
+                </div>
+
+                <!-- Additional Services Configuration -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">🍽️</span>
+                        <h3>Additional Services Revenue</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>F&B Revenue per Guest/Day (€)</label>
+                        <input type="number" class="form-control" id="config-fb-revenue" value="95" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Spa Revenue per Guest/Stay (€)</label>
+                        <input type="number" class="form-control" id="config-spa-revenue" value="135" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Activities Revenue per Guest/Stay (€)</label>
+                        <input type="number" class="form-control" id="config-activities-revenue" value="105" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Content Creation Shoots per Month</label>
+                        <input type="number" class="form-control" id="config-content-shoots" value="3" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Content Creation Rate per Shoot (€)</label>
+                        <input type="number" class="form-control" id="config-content-rate" value="2800" onchange="calculateMetrics()">
+                    </div>
+                </div>
+
+                <!-- Event Hosting Configuration -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">🎭</span>
+                        <h3>Event Hosting & Celebrations</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>Corporate Events per Month</label>
+                        <input type="number" class="form-control" id="config-corporate-events" value="2" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Average Corporate Event Revenue (€)</label>
+                        <input type="number" class="form-control" id="config-corporate-rate" value="4500" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Private Events per Month</label>
+                        <input type="number" class="form-control" id="config-private-events" value="1.5" step="0.5" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Average Private Event Revenue (€)</label>
+                        <input type="number" class="form-control" id="config-private-rate" value="3200" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Weddings per Year</label>
+                        <input type="number" class="form-control" id="config-weddings-year" value="8" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Average Wedding Package (€)</label>
+                        <input type="number" class="form-control" id="config-wedding-rate" value="12500" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Anniversary/Special Celebrations per Year</label>
+                        <input type="number" class="form-control" id="config-anniversaries-year" value="6" onchange="calculateMetrics()">
+                    </div>
+                    <div class="form-group">
+                        <label>Average Anniversary Package (€)</label>
+                        <input type="number" class="form-control" id="config-anniversary-rate" value="4800" onchange="calculateMetrics()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Packages Tab -->
+        <div id="packages" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">🎁</span>
+                    <h3>Lifestyle & Experience Packages</h3>
+                </div>
+                
+                <div class="alert alert-info" style="margin-bottom: 24px;">
+                    <strong>💡 Fully Customizable Packages:</strong> Click on any package title, description, or price to edit. 
+                    Adjust expected sales quantities to see revenue impact. All changes are automatically reflected in your business model calculations. Don't forget to save your changes!
+                </div>
+                
+                <div class="grid grid-2">
+                    <div class="package-card">
+                        <div class="package-title"><input type="text" id="package-yoga-title" value="🧘‍♀️ Yoga & Wellness Retreat" style="border:none;background:transparent;font-size:1.3rem;font-weight:700;color:var(--primary-blue);width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-description"><input type="text" id="package-yoga-description" value="2 Nights • Yoga Classes • Spa Treatment" style="border:none;background:transparent;color:var(--neutral-800);margin-bottom:16px;font-size:0.95rem;width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-price">€<input type="number" id="package-yoga-price" value="1680" style="border:none;background:transparent;font-size:2.5rem;font-weight:700;color:var(--accent-gold);width:200px;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div style="margin: 16px 0; padding: 12px; background: var(--light-gold); border-radius: 8px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--primary-blue);">Expected Sales per Year:</label>
+                            <input type="number" id="package-yoga-quantity" value="24" min="0" style="width: 100%; padding: 8px; border: 2px solid var(--neutral-200); border-radius: 8px; text-align: center; font-weight: 600;" onchange="updatePackageMetrics()">
+                        </div>
+                        <ul class="package-features">
+                            <li>Deluxe accommodation for 2 nights</li>
+                            <li>Daily yoga sessions with certified instructor</li>
+                            <li>Premium spa treatment package</li>
+                            <li>Healthy gourmet breakfast & dinner</li>
+                            <li>Meditation sessions at sunrise</li>
+                            <li>Wellness consultation</li>
+                        </ul>
+                        <button class="btn btn-primary btn-full" onclick="savePackageCustomizations()">💾 Save Package Changes</button>
+                    </div>
+
+                    <div class="package-card">
+                        <div class="package-title"><input type="text" id="package-golf-title" value="⛳ Golf & Gourmet Experience" style="border:none;background:transparent;font-size:1.3rem;font-weight:700;color:var(--primary-blue);width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-description"><input type="text" id="package-golf-description" value="3-5 Nights • Golf Courses • Fine Dining" style="border:none;background:transparent;color:var(--neutral-800);margin-bottom:16px;font-size:0.95rem;width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-price">€<input type="number" id="package-golf-price" value="3850" style="border:none;background:transparent;font-size:2.5rem;font-weight:700;color:var(--accent-gold);width:200px;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div style="margin: 16px 0; padding: 12px; background: var(--light-gold); border-radius: 8px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--primary-blue);">Expected Sales per Year:</label>
+                            <input type="number" id="package-golf-quantity" value="18" min="0" style="width: 100%; padding: 8px; border: 2px solid var(--neutral-200); border-radius: 8px; text-align: center; font-weight: 600;" onchange="updatePackageMetrics()">
+                        </div>
+                        <ul class="package-features">
+                            <li>Premium accommodation 3-5 nights</li>
+                            <li>Daily golf rounds at different courses</li>
+                            <li>Golf pro lessons and equipment</li>
+                            <li>Fine dining experiences</li>
+                            <li>Wine tasting sessions</li>
+                            <li>Private transfers to golf clubs</li>
+                        </ul>
+                        <button class="btn btn-primary btn-full" onclick="savePackageCustomizations()">💾 Save Package Changes</button>
+                    </div>
+
+                    <div class="package-card">
+                        <div class="package-title"><input type="text" id="package-weekend-title" value="🌊 Weekend Wellness Escape" style="border:none;background:transparent;font-size:1.3rem;font-weight:700;color:var(--primary-blue);width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-description"><input type="text" id="package-weekend-description" value="2 Nights • Spa • Ocean Activities" style="border:none;background:transparent;color:var(--neutral-800);margin-bottom:16px;font-size:0.95rem;width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-price">€<input type="number" id="package-weekend-price" value="2950" style="border:none;background:transparent;font-size:2.5rem;font-weight:700;color:var(--accent-gold);width:200px;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div style="margin: 16px 0; padding: 12px; background: var(--light-gold); border-radius: 8px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--primary-blue);">Expected Sales per Year:</label>
+                            <input type="number" id="package-weekend-quantity" value="16" min="0" style="width: 100%; padding: 8px; border: 2px solid var(--neutral-200); border-radius: 8px; text-align: center; font-weight: 600;" onchange="updatePackageMetrics()">
+                        </div>
+                        <ul class="package-features">
+                            <li>VIP suite accommodation for 2 nights</li>
+                            <li>Comprehensive spa treatments</li>
+                            <li>Ocean activities (jet ski, sailing)</li>
+                            <li>Gourmet dining experiences</li>
+                            <li>Private beach access</li>
+                            <li>Sunset cocktail sessions</li>
+                        </ul>
+                        <button class="btn btn-primary btn-full" onclick="savePackageCustomizations()">💾 Save Package Changes</button>
+                    </div>
+
+                    <div class="package-card">
+                        <div class="package-title"><input type="text" id="package-content-title" value="🎬 Content Creator Package" style="border:none;background:transparent;font-size:1.3rem;font-weight:700;color:var(--primary-blue);width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-description"><input type="text" id="package-content-description" value="3 Nights • Professional Shoots • Styling" style="border:none;background:transparent;color:var(--neutral-800);margin-bottom:16px;font-size:0.95rem;width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-price">€<input type="number" id="package-content-price" value="5200" style="border:none;background:transparent;font-size:2.5rem;font-weight:700;color:var(--accent-gold);width:200px;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div style="margin: 16px 0; padding: 12px; background: var(--light-gold); border-radius: 8px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--primary-blue);">Expected Sales per Year:</label>
+                            <input type="number" id="package-content-quantity" value="12" min="0" style="width: 100%; padding: 8px; border: 2px solid var(--neutral-200); border-radius: 8px; text-align: center; font-weight: 600;" onchange="updatePackageMetrics()">
+                        </div>
+                        <ul class="package-features">
+                            <li>VIP suite for 3 nights</li>
+                            <li>Professional photo/video shoots</li>
+                            <li>Styling and makeup services</li>
+                            <li>Multiple scenic locations</li>
+                            <li>Content editing and delivery</li>
+                            <li>Social media consultation</li>
+                        </ul>
+                        <button class="btn btn-primary btn-full" onclick="savePackageCustomizations()">💾 Save Package Changes</button>
+                    </div>
+
+                    <div class="package-card">
+                        <div class="package-title"><input type="text" id="package-wedding-title" value="💕 Wedding Celebration" style="border:none;background:transparent;font-size:1.3rem;font-weight:700;color:var(--primary-blue);width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-description"><input type="text" id="package-wedding-description" value="3 Days • Ceremony • Reception" style="border:none;background:transparent;color:var(--neutral-800);margin-bottom:16px;font-size:0.95rem;width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-price">€<input type="number" id="package-wedding-price" value="12500" style="border:none;background:transparent;font-size:2.5rem;font-weight:700;color:var(--accent-gold);width:200px;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div style="margin: 16px 0; padding: 12px; background: var(--light-gold); border-radius: 8px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--primary-blue);">Expected Sales per Year:</label>
+                            <input type="number" id="package-wedding-quantity" value="8" min="0" style="width: 100%; padding: 8px; border: 2px solid var(--neutral-200); border-radius: 8px; text-align: center; font-weight: 600;" onchange="updatePackageMetrics()">
+                        </div>
+                        <ul class="package-features">
+                            <li>Exclusive venue for 3 days</li>
+                            <li>Wedding ceremony setup</li>
+                            <li>Reception dinner for up to 50 guests</li>
+                            <li>Bridal suite accommodation</li>
+                            <li>Professional photography</li>
+                            <li>Wedding coordination services</li>
+                        </ul>
+                        <button class="btn btn-primary btn-full" onclick="savePackageCustomizations()">💾 Save Package Changes</button>
+                    </div>
+
+                    <div class="package-card">
+                        <div class="package-title"><input type="text" id="package-anniversary-title" value="🎉 Anniversary Special" style="border:none;background:transparent;font-size:1.3rem;font-weight:700;color:var(--primary-blue);width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-description"><input type="text" id="package-anniversary-description" value="2 Nights • Romantic • Celebration" style="border:none;background:transparent;color:var(--neutral-800);margin-bottom:16px;font-size:0.95rem;width:100%;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div class="package-price">€<input type="number" id="package-anniversary-price" value="4800" style="border:none;background:transparent;font-size:2.5rem;font-weight:700;color:var(--accent-gold);width:200px;text-align:center;" onchange="updatePackageMetrics()"></div>
+                        <div style="margin: 16px 0; padding: 12px; background: var(--light-gold); border-radius: 8px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--primary-blue);">Expected Sales per Year:</label>
+                            <input type="number" id="package-anniversary-quantity" value="6" min="0" style="width: 100%; padding: 8px; border: 2px solid var(--neutral-200); border-radius: 8px; text-align: center; font-weight: 600;" onchange="updatePackageMetrics()">
+                        </div>
+                        <ul class="package-features">
+                            <li>VIP suite with ocean view</li>
+                            <li>Romantic dinner setup</li>
+                            <li>Couples spa treatments</li>
+                            <li>Champagne and flowers</li>
+                            <li>Private celebration services</li>
+                            <li>Memory book creation</li>
+                        </ul>
+                        <button class="btn btn-primary btn-full" onclick="savePackageCustomizations()">💾 Save Package Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenarios Tab -->
+        <div id="scenarios" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">📈</span>
+                    <h3>Scenario Planning & Projections</h3>
+                </div>
+                
+                <div class="scenario-selector">
+                    <button class="scenario-btn active" onclick="setScenario('conservative')">🔻 Conservative</button>
+                    <button class="scenario-btn" onclick="setScenario('realistic')">📊 Realistic</button>
+                    <button class="scenario-btn" onclick="setScenario('optimistic')">🚀 Optimistic</button>
+                </div>
+
+                <div class="alert alert-info" id="scenario-description">
+                    <strong>Realistic Scenario:</strong> Based on market analysis and comparable luxury properties. Assumes moderate growth and typical market conditions.
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h4 style="color: var(--primary-blue); margin-bottom: 16px;">3-Year Revenue Projection</h4>
+                        <div class="metric-card" style="margin-bottom: 12px;">
+                            <h4>Year 1</h4>
+                            <div class="value" style="font-size: 1.5rem;" id="projection-year1">€1,555,000</div>
+                        </div>
+                        <div class="metric-card" style="margin-bottom: 12px;">
+                            <h4>Year 2</h4>
+                            <div class="value" style="font-size: 1.5rem;" id="projection-year2">€1,711,000</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Year 3</h4>
+                            <div class="value" style="font-size: 1.5rem;" id="projection-year3">€1,882,000</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h4 style="color: var(--primary-blue); margin-bottom: 16px;">Break-even Analysis</h4>
+                        <div class="metric-card" style="margin-bottom: 12px;">
+                            <h4>Break-even Occupancy</h4>
+                            <div class="value" style="font-size: 1.5rem;" id="breakeven-occupancy">41%</div>
+                        </div>
+                        <div class="metric-card" style="margin-bottom: 12px;">
+                            <h4>Monthly Break-even</h4>
+                            <div class="value" style="font-size: 1.5rem;" id="breakeven-monthly">€95,000</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Safety Margin</h4>
+                            <div class="value" style="font-size: 1.5rem;" id="safety-margin">27%</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h4 style="color: var(--primary-blue); margin-bottom: 16px;">Investment Analysis</h4>
+                        <div class="metric-card" style="margin-bottom: 12px;">
+                            <h4>Initial Investment</h4>
+                            <div class="value" style="font-size: 1.5rem;">€2,750,000</div>
+                        </div>
+                        <div class="metric-card" style="margin-bottom: 12px;">
+                            <h4>Payback Period</h4>
+                            <div class="value" style="font-size: 1.5rem;" id="payback-period">2.8 years</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>IRR</h4>
+                            <div class="value" style="font-size: 1.5rem;" id="irr">36.5%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sensitivity Analysis -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">🔍</span>
+                    <h3>Sensitivity Analysis</h3>
+                </div>
+                <div class="grid grid-2">
+                    <div>
+                        <h4 style="color: var(--primary-blue); margin-bottom: 16px;">Occupancy Rate Impact</h4>
+                        <div class="cost-breakdown">
+                            <div class="cost-item">
+                                <span>+10% Occupancy</span>
+                                <span style="color: var(--success-green);">+€186,000 (+12%)</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>+5% Occupancy</span>
+                                <span style="color: var(--success-green);">+€93,000 (+6%)</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>-5% Occupancy</span>
+                                <span style="color: var(--error-red);">-€93,000 (-6%)</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>-10% Occupancy</span>
+                                <span style="color: var(--error-red);">-€186,000 (-12%)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-blue); margin-bottom: 16px;">Pricing Impact</h4>
+                        <div class="cost-breakdown">
+                            <div class="cost-item">
+                                <span>+10% Room Rates</span>
+                                <span style="color: var(--success-green);">+€78,500 (+5%)</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>+5% Room Rates</span>
+                                <span style="color: var(--success-green);">+€39,250 (+2.5%)</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>-5% Room Rates</span>
+                                <span style="color: var(--error-red);">-€39,250 (-2.5%)</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>-10% Room Rates</span>
+                                <span style="color: var(--error-red);">-€78,500 (-5%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">🔍</span>
+                    <h3>Advanced Analytics & Insights</h3>
+                </div>
+                
+                <div class="grid grid-3">
+                    <div class="metric-card">
+                        <h4>Customer Acquisition Cost</h4>
+                        <div class="value" id="analytics-cac">€395</div>
+                        <div class="change">Industry avg: €450</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Customer Lifetime Value</h4>
+                        <div class="value" id="analytics-clv">€2,450</div>
+                        <div class="change">CLV/CAC: 6.2x</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Net Promoter Score</h4>
+                        <div class="value" id="analytics-nps">73</div>
+                        <div class="change">Excellent rating</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Revenue per Guest</h4>
+                        <div class="value" id="analytics-rpg">€1,285</div>
+                        <div class="change">Above market avg</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Guest Satisfaction</h4>
+                        <div class="value" id="analytics-satisfaction">4.7/5</div>
+                        <div class="change">Premium service</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Repeat Guest Rate</h4>
+                        <div class="value" id="analytics-repeat">28%</div>
+                        <div class="change">Strong loyalty</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost Analytics -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">💰</span>
+                    <h3>Cost Analytics & Efficiency Ratios</h3>
+                </div>
+                <div class="grid grid-2">
+                    <div>
+                        <h4 style="color: var(--primary-blue); margin-bottom: 16px;">Operational Efficiency</h4>
+                        <div class="grid grid-2">
+                            <div class="metric-card" style="background: var(--light-gold); color: var(--primary-blue);">
+                                <h4>Cost per Occupied Room</h4>
+                                <div class="value" style="font-size: 1.5rem;">€285</div>
+                                <div class="change">Optimized</div>
+                            </div>
+                            <div class="metric-card" style="background: var(--light-gold); color: var(--primary-blue);">
+                                <h4>Labor Cost Ratio</h4>
+                                <div class="value" style="font-size: 1.5rem;">31.2%</div>
+                                <div class="change">Industry: 35-40%</div>
+                            </div>
+                            <div class="metric-card" style="background: var(--light-gold); color: var(--primary-blue);">
+                                <h4>Energy Cost per Room</h4>
+                                <div class="value" style="font-size: 1.5rem;">€45</div>
+                                <div class="change">Efficient</div>
+                            </div>
+                            <div class="metric-card" style="background: var(--light-gold); color: var(--primary-blue);">
+                                <h4>Maintenance Cost Ratio</h4>
+                                <div class="value" style="font-size: 1.5rem;">4.2%</div>
+                                <div class="change">Well maintained</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-blue); margin-bottom: 16px;">Financial Ratios</h4>
+                        <div class="cost-breakdown">
+                            <div class="cost-item">
+                                <span>EBITDA Margin</span>
+                                <span style="color: var(--success-green);">42%</span>
+                            </div>
+                            <div class="cost-item">
+                                <span>Gross Profit Margin</span>
+                                <span style="color: var(--
