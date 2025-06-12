@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bahia Golf Beach - Revenue Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fifa-gradient {
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #ffeaa7 100%);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+        }
+        .tab-active {
+            border-bottom: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .tab-inactive {
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+        }
+        .bar-chart {
+            display: flex;
+            align-items: end;
+            height: 200px;
+            padding: 20px;
+            gap: 20px;
+        }
+        .bar {
+            min-width: 60px;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            text-align: center;
+            width: 80px;
+        }
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .editable-field {
+            border: 1px solid transparent;
+            padding: 2px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .editable-field:hover {
+            border-color: #e5e7eb;
+            background-color: #f9fafb;
+        }
+        .editable-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-blue-600 rounded-lg">
+                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Bahia Golf Beach Resort</h1>
+                        <p class="text-sm text-gray-600">Luxury Guesthouse Revenue Management</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Bouznika, Morocco</p>
+                    <p class="text-xs text-gray-500">Strategic location: 2030 World Cup proximity</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4">
+            <nav class="flex space-x-8">
+                <button onclick="showTab('dashboard')" id="tab-dashboard" class="tab-active py-4 px-1 font-medium text-sm">Dashboard</button>
+                <button onclick="showTab('core')" id="tab-core" class="tab-inactive py-4 px-1 font-medium text-sm">Core Services</button>
+                <button onclick="showTab('packages')" id="tab-packages" class="tab-inactive py-4 px-1 font-medium text-sm">Packages</button>
+                <button onclick="showTab('events')" id="tab-events" class="tab-inactive py-4 px-1 font-medium text-sm">Event Services</button>
+                <button onclick="showTab('scenarios')" id="tab-scenarios" class="tab-inactive py-4 px-1 font-medium text-sm">Scenarios</button>
+                <button onclick="showTab('analytics')" id="tab-analytics" class="tab-inactive py-4 px-1 font-medium text-sm">Analytics</button>
+                <button onclick="showTab('reports')" id="tab-reports" class="tab-inactive py-4 px-1 font-medium text-sm">Reports</button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard-content" class="tab-content">
+            <div class="space-y-6">
+                <!-- KPI Cards -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Key Performance Indicators</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-6 rounded-lg shadow-sm border">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">RevPAR</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="revpar">$346</p>
+                                </div>
+                                <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">ADR</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="adr">$455</p>
+                                </div>
+                                <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Avg Occupancy</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="occupancy">65%</p>
+                                </div>
+                                <svg class="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Yearly Revenue</p>
+                                    <p class="text-2xl font-bold text-gray-900" id="total-revenue">$1,250,000</p>
+                                </div>
+                                <svg class="h-8 w-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Chart -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <h3 class="text-lg font-semibold mb-4">Yearly Revenue by Business Unit</h3>
+                    <div class="bar-chart bg-gray-50 rounded-lg">
+                        <div class="bar bg-blue-500" id="bar-accommodation" style="height: 80%;">
+                            <div class="bar-value text-blue-700">$630K</div>
+                            <div class="bar-label">Accommodation</div>
+                        </div>
+                        <div class="bar bg-green-500" id="bar-culinary" style="height: 45%;">
+                            <div class="bar-value text-green-700">$360K</div>
+                            <div class="bar-label">Culinary</div>
+                        </div>
+                        <div class="bar bg-purple-500" id="bar-wellness" style="height: 25%;">
+                            <div class="bar-value text-purple-700">$187K</div>
+                            <div class="bar-label">Wellness</div>
+                        </div>
+                        <div class="bar bg-cyan-500" id="bar-nautical" style="height: 20%;">
+                            <div class="bar-value text-cyan-700">$150K</div>
+                            <div class="bar-label">Nautical</div>
+                        </div>
+                        <div class="bar bg-red-500" id="bar-events" style="height: 100%;">
+                            <div class="bar-value text-red-700">$876K</div>
+                            <div class="bar-label">Events</div>
+                        </div>
+                        <div class="bar bg-orange-500" id="bar-lifestyle" style="height: 55%;">
+                            <div class="bar-value text-orange-700">$459K</div>
+                            <div class="bar-label">Packages</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FIFA World Cup 2030 Impact Analysis -->
+                <div class="fifa-gradient p-8 rounded-xl relative overflow-hidden">
+                    <div class="absolute inset-0 bg-black bg-opacity-10 rounded-xl"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-center mb-6">
+                            <h3 class="text-2xl font-bold text-white text-center">FIFA World Cup 2030 Impact Analysis</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white bg-opacity-95 p-6 rounded-lg shadow-lg transform hover:scale-105 transition-transform">
+                                <h4 class="font-bold text-green-700 text-center text-lg">Expected Revenue Boost</h4>
+                                <p class="text-4xl font-bold text-green-800 text-center">+285%</p>
+                                <p class="text-sm text-gray-600 text-center">During tournament period</p>
+                            </div>
+                            <div class="bg-white bg-opacity-95 p-6 rounded-lg shadow-lg transform hover:scale-105 transition-transform">
+                                <h4 class="font-bold text-blue-700 text-center text-lg">Premium Pricing</h4>
+                                <p class="text-4xl font-bold text-blue-800 text-center">$1,200</p>
+                                <p class="text-sm text-gray-600 text-center">Average daily rate</p>
+                            </div>
+                            <div class="bg-white bg-opacity-95 p-6 rounded-lg shadow-lg transform hover:scale-105 transition-transform">
+                                <h4 class="font-bold text-purple-700 text-center text-lg">Bookings Forecast</h4>
+                                <p class="text-4xl font-bold text-purple-800 text-center">100%</p>
+                                <p class="text-sm text-gray-600 text-center">Expected occupancy</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center">
+                            <p class="text-white text-lg font-semibold bg-black bg-opacity-30 inline-block px-6 py-2 rounded-full">
+                                🏟️ Strategic Location: Hassan II Stadium Proximity 🏟️
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Services Tab -->
+        <div id="core-content" class="tab-content hidden">
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <h3 class="text-lg font-semibold mb-4">Property Configuration</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Deluxe Rooms</label>
+                            <input type="number" id="rooms" value="4" onchange="updateProperty()" class="w-full p-3 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">VIP Suites</label>
+                            <input type="number" id="vipSuite" value="1" onchange="updateProperty()" class="w-full p-3 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Base Room Rate ($)</label>
+                            <input type="number" id="baseRate" value="350" onchange="updateProperty()" class="w-full p-3 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">VIP Suite Rate ($)</label>
+                            <input type="number" id="vipRate" value="650" onchange="updateProperty()" class="w-full p-3 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Peak Season Occupancy (%)</label>
+                            <input type="number" id="peakOccupancy" value="85" min="0" max="100" onchange="updateProperty()" class="w-full p-3 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Shoulder Season Occupancy (%)</label>
+                            <input type="number" id="shoulderOccupancy" value="65" min="0" max="100" onchange="updateProperty()" class="w-full p-3 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Off-Peak Season Occupancy (%)</label>
+                            <input type="number" id="offpeakOccupancy" value="45" min="0" max="100" onchange="updateProperty()" class="w-full p-3 border rounded-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Pricing Strategy -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <h3 class="text-lg font-semibold mb-4">Dynamic Pricing Strategy</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-4 bg-red-50 rounded-lg">
+                            <h4 class="font-semibold text-red-800 mb-2">Peak Season</h4>
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium mb-1">Premium (%)</label>
+                                <input type="number" id="peak-premium" value="40" onchange="updateProperty()" class="w-full p-2 border rounded text-center">
+                            </div>
+                            <p class="text-sm text-gray-600">Jun, Jul, Aug, Dec</p>
+                            <p class="text-lg font-semibold mt-2" id="peak-price">$490/night</p>
+                            <p class="text-sm text-gray-500 mt-1">Occupancy: <span id="peak-occ-display">85%</span></p>
+                        </div>
+                        <div class="p-4 bg-yellow-50 rounded-lg">
+                            <h4 class="font-semibold text-yellow-800 mb-2">Shoulder Season</h4>
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium mb-1">Premium (%)</label>
+                                <input type="number" id="shoulder-premium" value="10" onchange="updateProperty()" class="w-full p-2 border rounded text-center">
+                            </div>
+                            <p class="text-sm text-gray-600">Apr, May, Sep, Oct</p>
+                            <p class="text-lg font-semibold mt-2" id="shoulder-price">$385/night</p>
+                            <p class="text-sm text-gray-500 mt-1">Occupancy: <span id="shoulder-occ-display">65%</span></p>
+                        </div>
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-semibold text-blue-800 mb-2">Off-Peak Season</h4>
+                            <div class="mb-3">
+                                <label class="block text-sm font-medium mb-1">Discount (%)</label>
+                                <input type="number" id="offpeak-discount" value="15" onchange="updateProperty()" class="w-full p-2 border rounded text-center">
+                            </div>
+                            <p class="text-sm text-gray-600">Jan, Feb, Mar, Nov</p>
+                            <p class="text-lg font-semibold mt-2" id="offpeak-price">$298/night</p>
+                            <p class="text-sm text-gray-500 mt-1">Occupancy: <span id="offpeak-occ-display">45%</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Services Revenue -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <h3 class="text-lg font-semibold mb-4">Additional Services Revenue</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="font-semibold">Accommodation</h4>
+                                <p class="text-sm text-gray-600">Base Revenue Stream</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-lg" id="accommodation-revenue">$630,000</p>
+                                <p class="text-sm text-green-600">65% margin</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="font-semibold">Culinary</h4>
+                                <p class="text-sm text-gray-600">% of Accommodation Revenue</p>
+                            </div>
+                            <div class="text-right flex items-center space-x-3">
+                                <div>
+                                    <input type="number" id="culinary-percentage" value="57" min="0" max="200" onchange="updateProperty()" class="w-16 p-2 border rounded text-center">
+                                    <span class="text-sm">%</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-lg" id="culinary-revenue">$360,000</p>
+                                    <p class="text-sm text-green-600">55% margin</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="font-semibold">Wellness & Spa</h4>
+                                <p class="text-sm text-gray-600">% of Accommodation Revenue</p>
+                            </div>
+                            <div class="text-right flex items-center space-x-3">
+                                <div>
+                                    <input type="number" id="wellness-percentage" value="30" min="0" max="200" onchange="updateProperty()" class="w-16 p-2 border rounded text-center">
+                                    <span class="text-sm">%</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-lg" id="wellness-revenue">$187,000</p>
+                                    <p class="text-sm text-green-600">75% margin</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="font-semibold">Nautical Activities</h4>
+                                <p class="text-sm text-gray-600">% of Accommodation Revenue</p>
+                            </div>
+                            <div class="text-right flex items-center space-x-3">
+                                <div>
+                                    <input type="number" id="nautical-percentage" value="24" min="0" max="200" onchange="updateProperty()" class="w-16 p-2 border rounded text-center">
+                                    <span class="text-sm">%</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-lg" id="nautical-revenue">$150,000</p>
+                                    <p class="text-sm text-green-600">70% margin</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="font-semibold">Event Services</h4>
+                                <p class="text-sm text-gray-600">Independent Revenue Stream</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-lg" id="events-revenue">$876,000</p>
+                                <p class="text-sm text-green-600">60% margin</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h4 class="font-semibold">Lifestyle Packages</h4>
+                                <p class="text-sm text-gray-600">Independent Revenue Stream</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-lg" id="packages-revenue">$459,000</p>
+                                <p class="text-sm text-green-600">80% margin</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Packages Tab -->
+        <div id="packages-content" class="tab-content hidden">
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Wellness & Yoga Retreat</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">2 Nights • Yoga Classes • Spa Treatment • Wellness Meals</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Package Price ($)</label>
+                                <input type="number" id="yoga-price" value="890" onchange="updatePackages()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Bookings</label>
+                                <input type="number" id="yoga-bookings" value="8" onchange="updatePackages()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="yoga-revenue">$85,440</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Golf & Gourmet Experience</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">3-5 Nights • Golf Courses • Fine Dining • Transportation</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Package Price ($)</label>
+                                <input type="number" id="golf-price" value="1650" onchange="updatePackages()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Bookings</label>
+                                <input type="number" id="golf-bookings" value="6" onchange="updatePackages()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="golf-revenue">$118,800</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Wellness & Spa Escape</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">2 Nights • Spa Treatments • Ocean Activities • Wellness Meals</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Package Price ($)</label>
+                                <input type="number" id="wellness-price" value="1240" onchange="updatePackages()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Bookings</label>
+                                <input type="number" id="wellness-bookings" value="10" onchange="updatePackages()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="wellness-revenue">$148,800</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Professional Content Creation</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">1 Night • Professional Shoots • Styling • Premium Suite</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Package Price ($)</label>
+                                <input type="number" id="content-price" value="2200" onchange="updatePackages()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Bookings</label>
+                                <input type="number" id="content-bookings" value="4" onchange="updatePackages()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="content-revenue">$105,600</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Packages Revenue Summary -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <h3 class="text-lg font-semibold mb-4">Packages Revenue Summary</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center p-4 bg-purple-50 rounded-lg">
+                            <p class="text-2xl font-bold text-purple-600" id="total-package-revenue">$458,640</p>
+                            <p class="text-sm text-gray-600">Total Yearly Revenue</p>
+                        </div>
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <p class="text-2xl font-bold text-blue-600" id="total-package-count">336</p>
+                            <p class="text-sm text-gray-600">Total Yearly Packages</p>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <p class="text-2xl font-bold text-green-600" id="total-package-nights">816</p>
+                            <p class="text-sm text-gray-600">Total Nights Used</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Services Tab -->
+        <div id="events-content" class="tab-content hidden">
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Corporate Event Hosting</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">Professional venues • AV equipment • Catering • Team building activities</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Price per Event ($)</label>
+                                <input type="number" id="corporate-price" value="3500" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Events</label>
+                                <input type="number" id="corporate-events" value="4" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="corporate-revenue">$168,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Wedding Ceremonies</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">Ocean-view venues • Full planning • Catering • Accommodations</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Price per Event ($)</label>
+                                <input type="number" id="wedding-price" value="8500" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Events</label>
+                                <input type="number" id="wedding-events" value="2" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="wedding-revenue">$204,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Anniversary Celebrations</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">Romantic settings • Personalized service • Special dining • Photography</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Price per Event ($)</label>
+                                <input type="number" id="anniversary-price" value="2200" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Events</label>
+                                <input type="number" id="anniversary-events" value="6" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="anniversary-revenue">$158,400</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Content Creation Services</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">Professional photography • Video production • Styling • Location access</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Price per Event ($)</label>
+                                <input type="number" id="creation-price" value="1800" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Events</label>
+                                <input type="number" id="creation-events" value="8" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="creation-revenue">$172,800</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Wellness Half Day-Pass</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">Spa access • Pool facilities • Wellness amenities • Light refreshments</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Price per Pass ($)</label>
+                                <input type="number" id="wellness-pass-price" value="150" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Passes</label>
+                                <input type="number" id="wellness-pass-events" value="25" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="wellness-pass-revenue">$45,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <h3 class="text-lg font-semibold mb-1 editable-field" contenteditable="true">Nautical Activities 2-Hour Pass</h3>
+                        <p class="text-sm text-gray-600 mb-4 editable-field" contenteditable="true">Jet ski rental • Boat access • Water sports equipment • Safety instruction</p>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Price per Pass ($)</label>
+                                <input type="number" id="nautical-pass-price" value="180" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Monthly Passes</label>
+                                <input type="number" id="nautical-pass-events" value="30" onchange="updateEvents()" class="w-full p-3 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Yearly Revenue:</span>
+                                <span class="text-lg font-bold text-green-600" id="nautical-pass-revenue">$64,800</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Services Summary -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <h3 class="text-lg font-semibold mb-4">Event Services Revenue Summary</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="text-center p-4 bg-purple-50 rounded-lg">
+                            <p class="text-2xl font-bold text-purple-600" id="total-event-revenue">$813,000</p>
+                            <p class="text-sm text-gray-600">Total Yearly Revenue</p>
+                        </div>
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <p class="text-2xl font-bold text-blue-600" id="total-event-count">900</p>
+                            <p class="text-sm text-gray-600">Total Yearly Events</p>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <p class="text-2xl font-bold text-green-600" id="avg-event-value">$903</p>
+                            <p class="text-sm text-gray-600">Average Event Value</p>
+                        </div>
+                        <div class="text-center p-4 bg-orange-50 rounded-lg">
+                            <p class="text-2xl font-bold text-orange-600" id="event-revenue-share">65%</p>
+                            <p class="text-sm text-gray-600">Revenue Share</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenarios Tab -->
+        <div id="scenarios-content" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                <h3 class="text-lg font-semibold mb-4">Scenario Planning & Projections</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 rounded-lg border-2 border-yellow-200 bg-yellow-50">
+                        <h4 class="font-semibold text-lg mb-3">Conservative Scenario</h4>
+                        <div class="space-y-2">
+                            <p><strong>Avg Occupancy:</strong> <span id="conservative-occ">55%</span></p>
+                            <p><strong>Yearly Revenue:</strong> <span id="conservative-revenue">$950,000</span></p>
+                            <p><strong>Profit Margin:</strong> 28%</p>
+                        </div>
+                    </div>
+                    <div class="p-6 rounded-lg border-2 border-green-200 bg-green-50">
+                        <h4 class="font-semibold text-lg mb-3">Current Scenario</h4>
+                        <div class="space-y-2">
+                            <p><strong>Avg Occupancy:</strong> <span id="current-occ">65%</span></p>
+                            <p><strong>Yearly Revenue:</strong> <span id="current-revenue">$1,250,000</span></p>
+                            <p><strong>Profit Margin:</strong> 35%</p>
+                        </div>
+                    </div>
+                    <div class="p-6 rounded-lg border-2 border-blue-200 bg-blue-50">
+                        <h4 class="font-semibold text-lg mb-3">Optimistic Scenario</h4>
+                        <div class="space-y-2">
+                            <p><strong>Avg Occupancy:</strong> <span id="optimistic-occ">85%</span></p>
+                            <p><strong>Yearly Revenue:</strong> <span id="optimistic-revenue">$1,750,000</span></p>
+                            <p><strong>Profit Margin:</strong> 42%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics-content" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                <h3 class="text-lg font-semibold mb-4">Key Performance Metrics</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3">Guest Satisfaction</h4>
+                        <div class="space-y-2">
+                            <p><strong>Satisfaction Score:</strong> 9.2/10</p>
+                            <p><strong>Return Guest Rate:</strong> 35%</p>
+                            <p><strong>Net Promoter Score:</strong> 78</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3">Operational Metrics</h4>
+                        <div class="space-y-2">
+                            <p><strong>Average Length of Stay:</strong> 3.2 nights</p>
+                            <p><strong>Staff Efficiency:</strong> 92%</p>
+                            <p><strong>Cost per Guest:</strong> $85</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports-content" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                <h3 class="text-lg font-semibold mb-4">Executive Dashboard Reports</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 border-2 border-dashed border-gray-300 rounded-lg text-center">
+                        <h4 class="font-semibold mb-2">Financial Report</h4>
+                        <p class="text-sm text-gray-600 mb-4">Comprehensive financial analysis and performance metrics</p>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Generate Report</button>
+                    </div>
+                    <div class="p-6 border-2 border-dashed border-gray-300 rounded-lg text-center">
+                        <h4 class="font-semibold mb-2">Market Analysis</h4>
+                        <p class="text-sm text-gray-600 mb-4">Competitive analysis and market positioning insights</p>
+                        <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Generate Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global business data object
+        var businessData = {
+            property: {
+                rooms: 4,
+                vipSuite: 1,
+                baseRate: 350,
+                vipRate: 650,
+                peakOccupancy: 85,
+                shoulderOccupancy: 65,
+                offpeakOccupancy: 45,
+                peakPremium: 40,
+                shoulderPremium: 10,
+                offpeakDiscount: 15,
+                culinaryPercentage: 57,
+                wellnessPercentage: 30,
+                nauticalPercentage: 24
+            },
+            packages: {
+                yoga: { price: 890, bookings: 8, nights: 2 },
+                golf: { price: 1650, bookings: 6, nights: 4 },
+                wellness: { price: 1240, bookings: 10, nights: 2 },
+                content: { price: 2200, bookings: 4, nights: 1 }
+            },
+            events: {
+                corporate: { price: 3500, events: 4 },
+                wedding: { price: 8500, events: 2 },
+                anniversary: { price: 2200, events: 6 },
+                creation: { price: 1800, events: 8 },
+                wellnessPass: { price: 150, events: 25 },
+                nauticalPass: { price: 180, events: 30 }
+            }
+        };
+
+        // Helper functions
+        function getElementValue(id, defaultValue) {
+            var element = document.getElementById(id);
+            if (element && element.value) {
+                var value = parseInt(element.value);
+                return isNaN(value) ? defaultValue : value;
+            }
+            return defaultValue;
+        }
+
+        function setElementText(id, text) {
+            var element = document.getElementById(id);
+            if (element) {
+                element.textContent = text;
+            }
+        }
+
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tab content
+            var contents = document.querySelectorAll('.tab-content');
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.add('hidden');
+            }
+            
+            // Reset all tabs to inactive
+            var tabs = document.querySelectorAll('[id^="tab-"]');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].className = 'tab-inactive py-4 px-1 font-medium text-sm';
+            }
+            
+            // Show selected content
+            var selectedContent = document.getElementById(tabName + '-content');
+            if (selectedContent) {
+                selectedContent.classList.remove('hidden');
+            }
+            
+            // Activate selected tab
+            var selectedTab = document.getElementById('tab-' + tabName);
+            if (selectedTab) {
+                selectedTab.className = 'tab-active py-4 px-1 font-medium text-sm';
+            }
+        }
+
+        // Calculate accommodation metrics
+        function calculateAccommodationMetrics() {
+            var totalRooms = businessData.property.rooms + businessData.property.vipSuite;
+            var weightedOccupancy = (
+                (businessData.property.peakOccupancy * 4) +
+                (businessData.property.shoulderOccupancy * 4) +
+                (businessData.property.offpeakOccupancy * 4)
+            ) / 12;
+            
+            var baseRate = businessData.property.baseRate;
+            var vipRate = businessData.property.vipRate;
+            
+            var peakRate = baseRate * (1 + businessData.property.peakPremium / 100);
+            var shoulderRate = baseRate * (1 + businessData.property.shoulderPremium / 100);
+            var offpeakRate = baseRate * (1 - businessData.property.offpeakDiscount / 100);
+            
+            var peakVipRate = vipRate * (1 + businessData.property.peakPremium / 100);
+            var shoulderVipRate = vipRate * (1 + businessData.property.shoulderPremium / 100);
+            var offpeakVipRate = vipRate * (1 - businessData.property.offpeakDiscount / 100);
+            
+            var daysPerSeason = 4 * 30.4;
+            
+            var peakRevenue = (peakRate * businessData.property.rooms + peakVipRate * businessData.property.vipSuite) * daysPerSeason * (businessData.property.peakOccupancy / 100);
+            var shoulderRevenue = (shoulderRate * businessData.property.rooms + shoulderVipRate * businessData.property.vipSuite) * daysPerSeason * (businessData.property.shoulderOccupancy / 100);
+            var offpeakRevenue = (offpeakRate * businessData.property.rooms + offpeakVipRate * businessData.property.vipSuite) * daysPerSeason * (businessData.property.offpeakOccupancy / 100);
+            
+            var totalAccommodationRevenue = peakRevenue + shoulderRevenue + offpeakRevenue;
+            var totalOccupiedNights = (totalRooms * daysPerSeason * businessData.property.peakOccupancy / 100) + (totalRooms * daysPerSeason * businessData.property.shoulderOccupancy / 100) + (totalRooms * daysPerSeason * businessData.property.offpeakOccupancy / 100);
+            var weightedADR = totalOccupiedNights > 0 ? totalAccommodationRevenue / totalOccupiedNights : 0;
+            
+            return {
+                accommodationRevenue: totalAccommodationRevenue,
+                weightedOccupancy: weightedOccupancy,
+                weightedADR: weightedADR,
+                totalRooms: totalRooms,
+                totalRoomNights: totalRooms * 365
+            };
+        }
+
+        // Update functions
+        function updateProperty() {
+            businessData.property.rooms = getElementValue('rooms', 4);
+            businessData.property.vipSuite = getElementValue('vipSuite', 1);
+            businessData.property.baseRate = getElementValue('baseRate', 350);
+            businessData.property.vipRate = getElementValue('vipRate', 650);
+            businessData.property.peakOccupancy = getElementValue('peakOccupancy', 85);
+            businessData.property.shoulderOccupancy = getElementValue('shoulderOccupancy', 65);
+            businessData.property.offpeakOccupancy = getElementValue('offpeakOccupancy', 45);
+            businessData.property.peakPremium = getElementValue('peak-premium', 40);
+            businessData.property.shoulderPremium = getElementValue('shoulder-premium', 10);
+            businessData.property.offpeakDiscount = getElementValue('offpeak-discount', 15);
+            businessData.property.culinaryPercentage = getElementValue('culinary-percentage', 57);
+            businessData.property.wellnessPercentage = getElementValue('wellness-percentage', 30);
+            businessData.property.nauticalPercentage = getElementValue('nautical-percentage', 24);
+            
+            updateDashboard();
+            updatePricing();
+            updateOccupancyDisplays();
+            updateScenarios();
+        }
+
+        function updatePackages() {
+            businessData.packages.yoga.price = getElementValue('yoga-price', 890);
+            businessData.packages.yoga.bookings = getElementValue('yoga-bookings', 8);
+            businessData.packages.golf.price = getElementValue('golf-price', 1650);
+            businessData.packages.golf.bookings = getElementValue('golf-bookings', 6);
+            businessData.packages.wellness.price = getElementValue('wellness-price', 1240);
+            businessData.packages.wellness.bookings = getElementValue('wellness-bookings', 10);
+            businessData.packages.content.price = getElementValue('content-price', 2200);
+            businessData.packages.content.bookings = getElementValue('content-bookings', 4);
+            
+            updatePackageDisplay();
+            updateDashboard();
+        }
+
+        function updateEvents() {
+            businessData.events.corporate.price = getElementValue('corporate-price', 3500);
+            businessData.events.corporate.events = getElementValue('corporate-events', 4);
+            businessData.events.wedding.price = getElementValue('wedding-price', 8500);
+            businessData.events.wedding.events = getElementValue('wedding-events', 2);
+            businessData.events.anniversary.price = getElementValue('anniversary-price', 2200);
+            businessData.events.anniversary.events = getElementValue('anniversary-events', 6);
+            businessData.events.creation.price = getElementValue('creation-price', 1800);
+            businessData.events.creation.events = getElementValue('creation-events', 8);
+            businessData.events.wellnessPass.price = getElementValue('wellness-pass-price', 150);
+            businessData.events.wellnessPass.events = getElementValue('wellness-pass-events', 25);
+            businessData.events.nauticalPass.price = getElementValue('nautical-pass-price', 180);
+            businessData.events.nauticalPass.events = getElementValue('nautical-pass-events', 30);
+            
+            updateEventDisplay();
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            var accommodationMetrics = calculateAccommodationMetrics();
+            var accommodationRevenue = accommodationMetrics.accommodationRevenue;
+            var weightedOccupancy = accommodationMetrics.weightedOccupancy;
+            var weightedADR = accommodationMetrics.weightedADR;
+            var totalRoomNights = accommodationMetrics.totalRoomNights;
+            
+            var culinaryRevenue = accommodationRevenue * (businessData.property.culinaryPercentage / 100);
+            var wellnessRevenue = accommodationRevenue * (businessData.property.wellnessPercentage / 100);
+            var nauticalRevenue = accommodationRevenue * (businessData.property.nauticalPercentage / 100);
+            
+            var packageRevenue = 0;
+            for (var key in businessData.packages) {
+                var pkg = businessData.packages[key];
+                packageRevenue += pkg.price * pkg.bookings * 12;
+            }
+            
+            var eventRevenue = 0;
+            for (var key in businessData.events) {
+                var event = businessData.events[key];
+                eventRevenue += event.price * event.events * 12;
+            }
+            
+            var totalRevenue = accommodationRevenue + culinaryRevenue + wellnessRevenue + nauticalRevenue + packageRevenue + eventRevenue;
+            var revpar = totalRoomNights > 0 ? (totalRevenue / totalRoomNights) : 0;
+            
+            setElementText('revpar', '$' + Math.round(revpar));
+            setElementText('adr', '$' + Math.round(weightedADR));
+            setElementText('occupancy', Math.round(weightedOccupancy) + '%');
+            setElementText('total-revenue', '$' + Math.round(totalRevenue).toLocaleString());
+            
+            setElementText('accommodation-revenue', '$' + Math.round(accommodationRevenue).toLocaleString());
+            setElementText('culinary-revenue', '$' + Math.round(culinaryRevenue).toLocaleString());
+            setElementText('wellness-revenue', '$' + Math.round(wellnessRevenue).toLocaleString());
+            setElementText('nautical-revenue', '$' + Math.round(nauticalRevenue).toLocaleString());
+            setElementText('events-revenue', '$' + Math.round(eventRevenue).toLocaleString());
+            setElementText('packages-revenue', '$' + Math.round(packageRevenue).toLocaleString());
+            
+            updateCharts();
+        }
+
+        function updatePricing() {
+            var baseRate = businessData.property.baseRate;
+            var peakPrice = baseRate * (1 + businessData.property.peakPremium / 100);
+            var shoulderPrice = baseRate * (1 + businessData.property.shoulderPremium / 100);
+            var offpeakPrice = baseRate * (1 - businessData.property.offpeakDiscount / 100);
+            
+            setElementText('peak-price', '$' + Math.round(peakPrice) + '/night');
+            setElementText('shoulder-price', '$' + Math.round(shoulderPrice) + '/night');
+            setElementText('offpeak-price', '$' + Math.round(offpeakPrice) + '/night');
+        }
+
+        function updateOccupancyDisplays() {
+            setElementText('peak-occ-display', businessData.property.peakOccupancy + '%');
+            setElementText('shoulder-occ-display', businessData.property.shoulderOccupancy + '%');
+            setElementText('offpeak-occ-display', businessData.property.offpeakOccupancy + '%');
+        }
+
+        function updatePackageDisplay() {
+            var packages = businessData.packages;
+            setElementText('yoga-revenue', '$' + (packages.yoga.price * packages.yoga.bookings * 12).toLocaleString());
+            setElementText('golf-revenue', '$' + (packages.golf.price * packages.golf.bookings * 12).toLocaleString());
+            setElementText('wellness-revenue', '$' + (packages.wellness.price * packages.wellness.bookings * 12).toLocaleString());
+            setElementText('content-revenue', '$' + (packages.content.price * packages.content.bookings * 12).toLocaleString());
+            
+            updatePackageSummary();
+        }
+
+        function updatePackageSummary() {
+            var packages = businessData.packages;
+            var totalRevenue = 0;
+            var totalPackages = 0;
+            var totalNights = 0;
+            
+            for (var key in packages) {
+                var pkg = packages[key];
+                var yearlyBookings = pkg.bookings * 12;
+                totalRevenue += pkg.price * yearlyBookings;
+                totalPackages += yearlyBookings;
+                totalNights += pkg.nights * yearlyBookings;
+            }
+            
+            setElementText('total-package-revenue', '$' + totalRevenue.toLocaleString());
+            setElementText('total-package-count', totalPackages.toString());
+            setElementText('total-package-nights', totalNights.toString());
+        }
+
+        function updateEventDisplay() {
+            var events = businessData.events;
+            setElementText('corporate-revenue', '$' + (events.corporate.price * events.corporate.events * 12).toLocaleString());
+            setElementText('wedding-revenue', '$' + (events.wedding.price * events.wedding.events * 12).toLocaleString());
+            setElementText('anniversary-revenue', '$' + (events.anniversary.price * events.anniversary.events * 12).toLocaleString());
+            setElementText('creation-revenue', '$' + (events.creation.price * events.creation.events * 12).toLocaleString());
+            setElementText('wellness-pass-revenue', '$' + (events.wellnessPass.price * events.wellnessPass.events * 12).toLocaleString());
+            setElementText('nautical-pass-revenue', '$' + (events.nauticalPass.price * events.nauticalPass.events * 12).toLocaleString());
+            
+            // Calculate summary
+            var totalRevenue = 0;
+            var totalEvents = 0;
+            for (var key in events) {
+                var event = events[key];
+                totalRevenue += event.price * event.events * 12;
+                totalEvents += event.events * 12;
+            }
+            var avgValue = totalEvents > 0 ? Math.round(totalRevenue / totalEvents) : 0;
+            
+            setElementText('total-event-revenue', '$' + totalRevenue.toLocaleString());
+            setElementText('total-event-count', totalEvents.toString());
+            setElementText('avg-event-value', '$' + avgValue);
+        }
+
+        function updateScenarios() {
+            var accommodationMetrics = calculateAccommodationMetrics();
+            var currentOccupancy = accommodationMetrics.weightedOccupancy;
+            var baseRevenue = accommodationMetrics.accommodationRevenue;
+            
+            var culinaryRevenue = baseRevenue * (businessData.property.culinaryPercentage / 100);
+            var wellnessRevenue = baseRevenue * (businessData.property.wellnessPercentage / 100);
+            var nauticalRevenue = baseRevenue * (businessData.property.nauticalPercentage / 100);
+            
+            var packageRevenue = 0;
+            for (var key in businessData.packages) {
+                var pkg = businessData.packages[key];
+                packageRevenue += pkg.price * pkg.bookings * 12;
+            }
+            
+            var eventRevenue = 0;
+            for (var key in businessData.events) {
+                var event = businessData.events[key];
+                eventRevenue += event.price * event.events * 12;
+            }
+            
+            var currentTotalRevenue = baseRevenue + culinaryRevenue + wellnessRevenue + nauticalRevenue + packageRevenue + eventRevenue;
+            
+            var conservativeOccupancy = Math.max(currentOccupancy * 0.85, 30);
+            var conservativeRevenue = Math.round(currentTotalRevenue * 0.76);
+            var optimisticOccupancy = Math.min(currentOccupancy * 1.20, 95);
+            var optimisticRevenue = Math.round(currentTotalRevenue * 1.40);
+            
+            setElementText('conservative-occ', Math.round(conservativeOccupancy) + '%');
+            setElementText('conservative-revenue', '$' + conservativeRevenue.toLocaleString());
+            setElementText('current-occ', Math.round(currentOccupancy) + '%');
+            setElementText('current-revenue', '$' + Math.round(currentTotalRevenue).toLocaleString());
+            setElementText('optimistic-occ', Math.round(optimisticOccupancy) + '%');
+            setElementText('optimistic-revenue', '$' + optimisticRevenue.toLocaleString());
+        }
+
+        function updateCharts() {
+            var accommodationMetrics = calculateAccommodationMetrics();
+            var accommodationRevenue = accommodationMetrics.accommodationRevenue;
+            var culinaryRevenue = accommodationRevenue * (businessData.property.culinaryPercentage / 100);
+            var wellnessRevenue = accommodationRevenue * (businessData.property.wellnessPercentage / 100);
+            var nauticalRevenue = accommodationRevenue * (businessData.property.nauticalPercentage / 100);
+            
+            var packageRevenue = 0;
+            for (var key in businessData.packages) {
+                var pkg = businessData.packages[key];
+                packageRevenue += pkg.price * pkg.bookings * 12;
+            }
+            
+            var eventRevenue = 0;
+            for (var key in businessData.events) {
+                var event = businessData.events[key];
+                eventRevenue += event.price * event.events * 12;
+            }
+
+            var revenues = [accommodationRevenue, culinaryRevenue, wellnessRevenue, nauticalRevenue, eventRevenue, packageRevenue];
+            var maxRevenue = Math.max.apply(null, revenues.filter(function(r) { return r > 0; }));
+            
+            if (maxRevenue > 0) {
+                function updateBar(id, revenue) {
+                    var bar = document.getElementById(id);
+                    if (bar) {
+                        bar.style.height = (revenue / maxRevenue * 100) + '%';
+                        var barValueEl = bar.querySelector('.bar-value');
+                        if (barValueEl) {
+                            barValueEl.textContent = '$' + (revenue / 1000).toFixed(0) + 'K';
+                        }
+                    }
+                }
+                
+                updateBar('bar-accommodation', accommodationRevenue);
+                updateBar('bar-culinary', culinaryRevenue);
+                updateBar('bar-wellness', wellnessRevenue);
+                updateBar('bar-nautical', nauticalRevenue);
+                updateBar('bar-events', eventRevenue);
+                updateBar('bar-lifestyle', packageRevenue);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            updatePricing();
+            updatePackageDisplay();
+            updateEventDisplay();
+            updateOccupancyDisplays();
+            updateScenarios();
+            showTab('dashboard');
+        });
+    </script>
+</body>
+</html>
